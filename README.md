@@ -10,9 +10,9 @@ PySuiteCRM supports all versions of SuiteCRM `7.10+`
 ## Contents
 
 - [Installation](#Installation)
-    - [OAuth2 Setup](#OAuth2 Setup)
-    - [SuiteCRM Setup](#SuiteCRM Setup)
-    - [PySuiteCRM Setup](#PySuiteCRM Setup)
+    - [OAuth2 Setup](#OAuth2_Setup)
+    - [SuiteCRM Setup](#SuiteCRM_Setup)
+    - [PySuiteCRM Setup](#PySuiteCRM_Setup)
 - [Configuration](#Configuration)
 - [Usage](#Usage)
     - [Create](#Create)
@@ -29,7 +29,7 @@ PySuiteCRM supports all versions of SuiteCRM `7.10+`
 - [License](#License)
 
 ## Installation
-### OAuth2 Setup
+### OAuth2_Setup
 [SuiteCRM Oauth2 Setup source](https://docs.suitecrm.com/developer/api/developer-setup-guide/json-api/#_generate_private_and_public_key_for_oauth2)
 
 SuiteCRM Api uses OAuth2 protocol, which needs public and private keys.
@@ -68,11 +68,11 @@ If you need more information about this issue, [please visit this page](https://
 
 <br/>
 
-### SuiteCRM Setup
+### SuiteCRM_Setup
 Login as Admin and navigate to Admin>OAuth2 Clients and Tokens>New Client Credentials Client and generate Client Credentials.
 Use the client id and client secret in the [Config.ini](\Config.ini)
 
-## PySuiteCRM Setup
+## PySuiteCRM_Setup
 Run the following command inside the directory of SuiteCRMPy
 ```bash
 pip install -r requirements.txt
