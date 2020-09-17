@@ -17,12 +17,11 @@ PySuiteCRM supports all versions of SuiteCRM `7.10+`
 - [Usage](#Usage)
     - [Create](#Create)
     - [Update](#Update)
-    - [Get](#Get)
-    - [Get All](#Get All)  
+    - [Get](#Get) 
     - [Delete](#Delete)
-    - [Create Relationship](#Create Relationship)
-    - [Get Relationship](#Get Relationship)
-    - [Delete Relationship](#Delete Relationship)
+    - [Create_Relationship](#Create_Relationship)
+    - [Get_Relationship](#Get_Relationship)
+    - [Delete_Relationship](#Delete_Relationship)
     - [Fields](#Fields)
 - [Performance](#Performance)
 - [Contributing](#Contributing)
@@ -97,24 +96,24 @@ cache timeout seconds = 300
 
 ## Usage
 
-###Import
+Import
 ```python
 from SuiteCRM import SuiteCRM
 
 suitecrm = SuiteCRM()
 ```
 
-###Create
+Create
 ```python
 result = suitecrm.Contacts.create(title='Software Engineer', first_name='Russell', last_name='Juma')
 ```
 
-###Update
+Update
 ```python
 result = suitecrm.Contacts.update(id='11129071-da4c-18ef-3107-5ead3a71d6fe', account_id='555-555-5555')
 ```
 
-###Get
+Get
 ```python
 # Request a record by id, returns a single record.
 result = suitecrm.Contacts.get(id='11129071-da4c-18ef-3107-5ead3a71d6fe')
@@ -129,26 +128,26 @@ result = suitecrm.Contacts.get(fields=['full_name', 'phone_mobile'], first_name=
 result = suitecrm.Contacts.get_all()
 
 ```
-####Limitations
+Limitations
 Get cannot filter on custom fields due to [bug #7285](https://github.com/salesagility/SuiteCRM/issues/7285) in SuiteCRM.
 
-###Delete
+Delete
 ```python
 # Delete record by id
 result = suitecrm.Contacts.delete(id='11129071-da4c-18ef-3107-5ead3a71d6fe')
 ```
 
-###Create Relationship
+###Create_Relationship
 ```python
 # Create relationship between '11129071-da4c-18ef-3107-5ead3a71d6fe' in the Contacts and Accounts with id ='555-555-5555'
 result = suitecrm.Contacts.create_relationship('11129071-da4c-18ef-3107-5ead3a71d6fe', 'Accounts', '555-555-5555')
 ```
-###Get Relationship
+###Get_Relationship
 ```python
 # Get relationships between '11129071-da4c-18ef-3107-5ead3a71d6fe' in the Contacts with any in Accounts.
 result = suitecrm.Contacts.get_relationship('11129071-da4c-18ef-3107-5ead3a71d6fe', 'Accounts')
 ```
-###Delete Relationship
+###Delete_Relationship
 ```python
 # Delete relationship between '11129071-da4c-18ef-3107-5ead3a71d6fe' in the Contacts and Accounts with id ='555-555-5555'
 result = suitecrm.Contacts.delete('11129071-da4c-18ef-3107-5ead3a71d6fe', 'Accounts', '555-555-5555')
