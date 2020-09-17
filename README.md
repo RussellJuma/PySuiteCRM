@@ -1,5 +1,4 @@
-# PySuiteCRM
-# PySuiteCRM   
+# PySuiteCRM  
 [![GitHub issues](https://img.shields.io/github/issues/RussellJuma/PySuiteCRM)](https://github.com/RussellJuma/PySuiteCRM/issues)
 [![GitHub stars](https://img.shields.io/github/stars/RussellJuma/PySuiteCRM)](https://github.com/RussellJuma/PySuiteCRM/stargazers)
 [![GitHub license](https://img.shields.io/github/license/RussellJuma/PySuiteCRM)](https://github.com/RussellJuma/PySuiteCRM/blob/master/LICENSE)
