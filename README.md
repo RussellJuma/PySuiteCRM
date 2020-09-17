@@ -95,7 +95,6 @@ cache timeout seconds = 300
 ```
 
 ## Usage
-
 ######Import
 ```python
 from SuiteCRM import SuiteCRM
