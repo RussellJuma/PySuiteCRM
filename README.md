@@ -108,7 +108,7 @@ Create
 result = suitecrm.Contacts.create(title='Software Engineer', first_name='Russell', last_name='Juma')
 ```
 
-Update
+####Update
 ```python
 result = suitecrm.Contacts.update(id='11129071-da4c-18ef-3107-5ead3a71d6fe', account_id='555-555-5555')
 ```
