@@ -70,7 +70,7 @@ If you need more information about this issue, [please visit this page](https://
 
 ### SuiteCRM_Setup
 Login as Admin and navigate to Admin>OAuth2 Clients and Tokens>New Client Credentials Client and generate Client Credentials.
-Use the client id and client secret in the [Config.ini](\Config.ini)
+Use the client id and client secret in the [Config.ini](Config.ini)
 
 ## PySuiteCRM_Setup
 Run the following command inside the directory of SuiteCRMPy
@@ -79,7 +79,7 @@ pip install -r requirements.txt
 ```
 ## Configuration
 
-Open [Config.ini](\Config.ini)
+Open [Config.ini](Config.ini)
 ```bash
 headers = Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36
 baseurl = https://{your SuiteCRM url}
@@ -173,4 +173,4 @@ Please make sure to update tests as appropriate.
 - [Russell Juma](https://github.com/RussellJuma)
 
 ## License
-PySuiteCRM is open source software licensed under the MIT license. See [LICENSE.md](LICENSE.md) for more information.
+PySuiteCRM is open source software licensed under the MIT license. See [LICENSE](LICENSE) for more information.
