@@ -1,6 +1,5 @@
 import json
 import uuid
-import configparser
 import atexit
 import math
 import datetime
@@ -9,10 +8,18 @@ from oauthlib.oauth2 import BackendApplicationClient, TokenExpiredError, Invalid
 from oauthlib.oauth2.rfc6749.errors import CustomOAuth2Error
 
 
-class SuiteCRM(object):
+class SuiteCRM:
 
-    def __init__(self):
-        self._config()
+    def __init__(self, client_id, client_secret, url, cache=False, cache_timeout=300):
+
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.baseurl = url
+        self.cache = cache
+        self.cache_timeout_seconds = cache_timeout
+        self.logout_on_exit = False
+        self.headers = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) ' \
+                       'Chrome/85.0.4183.83 Safari/537.36'
         self._login()
         self._modules()
 
@@ -41,28 +48,22 @@ class SuiteCRM(object):
         self.Tasks = Module(self, 'Tasks')
         self.Templates = Module(self, 'Templates')
 
-    def _config(self):
-        self.config = configparser.ConfigParser()
-        self.config.read('Config.ini')
-        self.baseurl = self.config['SUITECRM']['base url']
-
     def _refresh_token(self):
         """
         Fetch a new token from from token access url, specified in config file.
         :return: None
         """
         try:
-            self.OAuth2Session.fetch_token(token_url=self.config['SUITECRM']['token url'],
-                                           client_id=self.config['SUITECRM']['client id'],
-                                           client_secret=self.config['SUITECRM']['client secret'])
+            self.OAuth2Session.fetch_token(token_url=self.baseurl[:-2] + 'access_token',
+                                           client_id=self.client_id,
+                                           client_secret=self.client_secret)
         except InvalidClientError:
             exit('401 (Unauthorized) - client id/secret')
         except CustomOAuth2Error:
             exit('401 (Unauthorized) - client id')
         # Update configuration file with new token'
-        self.config.set('SUITECRM', 'Access Token', str(self.OAuth2Session.token))
-        with open('Config.ini', 'w') as configfile:
-            self.config.write(configfile)
+        with open('AccessToken.txt', 'w+') as file:
+            file.write(str(self.OAuth2Session.token))
 
     def _login(self):
         """
@@ -73,20 +74,22 @@ class SuiteCRM(object):
         """
         # Does session exist?
         if not hasattr(self, 'OAuth2Session'):
-            client = BackendApplicationClient(client_id=self.config['SUITECRM']['Client ID'])
+            client = BackendApplicationClient(client_id=self.client_id)
             self.OAuth2Session = OAuth2Session(client=client,
-                                               client_id=self.config['SUITECRM']['Client ID'])
-            self.OAuth2Session.headers.update({"User-Agent": self.config['SUITECRM']['Headers'],
+                                               client_id=self.client_id)
+            self.OAuth2Session.headers.update({"User-Agent": self.headers,
                                                'Content-Type': 'application/json'})
-            if self.config['SUITECRM']['access token'] == '':
-                self._refresh_token()
-            else:
-                self.OAuth2Session.token = eval(self.config['SUITECRM']['access token'])
+            with open('AccessToken.txt', 'w+') as file:
+                token = file.read()
+                if token == '':
+                    self._refresh_token()
+                else:
+                    self.OAuth2Session.token = token
         else:
             self._refresh_token()
 
         # Logout on exit
-        if eval(self.config['SUITECRM']['logout on exit']):
+        if self.logout_on_exit:
             atexit.register(self._logout)
 
     def _logout(self):
@@ -96,9 +99,8 @@ class SuiteCRM(object):
         """
         url = '/logout'
         self.request(f'{self.baseurl}{url}', 'post')
-        self.config.set('SUITECRM', 'access token', '')
-        with open('Config.ini', 'w') as configfile:
-            self.config.write(configfile)
+        with open('AccessToken.txt', 'w+') as file:
+            file.write('')
 
     def request(self, url, method, parameters=''):
         """
@@ -156,8 +158,8 @@ class Module:
         self.suitecrm = suitecrm
         self.cache = {}
         self.cache_time = {}
-        self.cache_status = eval(self.suitecrm.config['SUITECRM']['cache requests'])
-        self.cache_timeout_seconds = eval(self.suitecrm.config['SUITECRM']['cache timeout seconds'])
+        self.cache_status = self.suitecrm.cache
+        self.cache_timeout_seconds = self.suitecrm.cache_timeout_seconds
 
     def _cache_delete(self, **by):
         """
@@ -183,16 +185,18 @@ class Module:
         :return: (dictionary) of request, or (JSON) of request if it fails
         """
         try:
-            if len(request['data']) != 0 and self.cache_status:
+            if len(request['data']) != 0:
                 # A single record
                 if type(request['data']) is dict:
-                    self.cache[request['data']['id']] = request['data']
-                    self.cache_time[request['data']['id']] = datetime.datetime.now()
+                    if self.cache_status:
+                        self.cache[request['data']['id']] = request['data']
+                        self.cache_time[request['data']['id']] = datetime.datetime.now()
                     return request['data']
                 # A list of records
-                for record in request['data']:
-                    self.cache[record['id']] = record
-                    self.cache_time[record['id']] = datetime.datetime.now()
+                if self.cache_status:
+                    for record in request['data']:
+                        self.cache[record['id']] = record
+                        self.cache_time[record['id']] = datetime.datetime.now()
                 if len(request['data']) == 1:
                     return request['data'][0]
                 else:
@@ -260,6 +264,8 @@ class Module:
         Important notice: we don’t support multiple level sorting right now!
 
         :return: (dictionary/list) A list or dictionary of record(s) that meet the filter criteria.
+                 (list) If more than one record
+                 (dictionary) if a single record
         """
         # Fields Constructor
         if fields:
@@ -286,17 +292,17 @@ class Module:
     def get_all(self, record_per_page=100):
         """
         Gets all the records in the module.
-        :return: (dictionary) All the records within a module.
+        :return: (list) All the records(dictionary) within a module.
         """
         # Get total record count
         url = f'/module/{self.module_name}?page[number]=1&page[size]=1'
         pages = math.ceil(self.suitecrm.request(f'{self.suitecrm.baseurl}{url}', 'get')['meta']['total-pages'] /
                           record_per_page) + 1
+        result = []
         for page in range(1, pages):
             url = f'/module/{self.module_name}?page[number]={page}&page[size]={record_per_page}'
-            self._cache_set(self.suitecrm.request(f'{self.suitecrm.baseurl}{url}', 'get'))
-
-        return self.cache
+            result.extend(self._cache_set(self.suitecrm.request(f'{self.suitecrm.baseurl}{url}', 'get')))
+        return result
 
     def update(self, id, **attributes):
         """

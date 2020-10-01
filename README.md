@@ -13,7 +13,6 @@ PySuiteCRM supports all versions of SuiteCRM `7.10+`
     - [OAuth2 Setup](#OAuth2_Setup)
     - [SuiteCRM Setup](#SuiteCRM_Setup)
     - [PySuiteCRM Setup](#PySuiteCRM_Setup)
-- [Configuration](#Configuration)
 - [Usage](#Usage)
     - [Create](#Create)
     - [Update](#Update)
@@ -70,36 +69,22 @@ If you need more information about this issue, [please visit this page](https://
 
 ### SuiteCRM_Setup
 Login as Admin and navigate to Admin>OAuth2 Clients and Tokens>New Client Credentials Client and generate Client Credentials.
-Use the client id and client secret in the [Config.ini](Config.ini)
 
 ## PySuiteCRM_Setup
 Run the following command inside the directory of SuiteCRMPy
 ```bash
 pip install -r requirements.txt
 ```
-## Configuration
-
-Open [Config.ini](Config.ini)
-```bash
-headers = Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36
-baseurl = https://{your SuiteCRM url}
-client id = 
-client secret = 
-logout on exit = False
-access token = 
-# Default cache requests = False
-# See single source of truth (SSOT) before setting cache requests to True
-cache requests = False
-# Default cache is set to 5 minutes
-cache timeout seconds = 300
-```
 
 ## Usage
-###Import
+### Import
 ```python
 from SuiteCRM import SuiteCRM
 
-suitecrm = SuiteCRM()
+suitecrm = SuiteCRM(client_id='client_id',
+                 client_secret='client_secret',
+                 url='https://your_suite_crm_location/Api/V8')
+
 ```
 
 ### Create
