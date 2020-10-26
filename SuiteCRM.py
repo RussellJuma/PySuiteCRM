@@ -197,10 +197,7 @@ class Module:
                     for record in request['data']:
                         self.cache[record['id']] = record
                         self.cache_time[record['id']] = datetime.datetime.now()
-                if len(request['data']) == 1:
-                    return request['data'][0]
-                else:
-                    return request['data']
+                return request['data']
         except:
             pass
         return request
